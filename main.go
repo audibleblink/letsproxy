@@ -1,46 +1,35 @@
 package main
 
 import (
+	"flag"
+	"log"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
-	"os"
 
-	"github.com/jessevdk/go-flags"
-	log "github.com/sirupsen/logrus"
 	"golang.org/x/crypto/acme/autocert"
 )
 
-var opts struct {
-	Domain string `short:"d" long:"domain" description:"Domain for which to request certs from Let's Encrypt" required:"true"`
-	To     string `short:"t" long:"to" description:"http[s]://IP:port to which traffic will be redirected" required:"true"`
-}
+var (
+	domain string
+	to     string
+)
 
 func init() {
-	_, err := flags.Parse(&opts)
-	if err != nil {
-		if err.(*flags.Error).Type == flags.ErrHelp {
-			os.Exit(0)
-		}
-		os.Exit(1)
-	}
+	flag.StringVar(&domain, "domain", "", "Domain for which to request certs")
+	flag.StringVar(&to, "to", "", "Downstream server. ex: http://localhost:8080")
+	flag.Parse()
 }
 
 func main() {
-	mainLogger := log.WithFields(log.Fields{
-		"to":     opts.To,
-		"domain": opts.Domain,
-	})
-
-	url, err := url.Parse(opts.To)
-	if err != nil {
-		mainLogger.Fatal(err)
+	if domain == "" || to == "" {
+		log.Fatal("Both -domain and -to are required")
 	}
 
-	mainLogger.Info("Attempting to fetch TLS certificates from Let's Encrypt")
+	log.Println("Attempting to fetch TLS certificates from Let's Encrypt")
 	manager := &autocert.Manager{
 		Cache:      autocert.DirCache("certs"),
-		HostPolicy: autocert.HostWhitelist(opts.Domain),
+		HostPolicy: autocert.HostWhitelist(domain),
 		Prompt:     autocert.AcceptTOS,
 	}
 
@@ -49,7 +38,12 @@ func main() {
 		TLSConfig: manager.TLSConfig(),
 	}
 
+	url, err := url.Parse(to)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	s.Handler = httputil.NewSingleHostReverseProxy(url)
-	mainLogger.Info("Starting Reverse Proxy Server")
-	mainLogger.Fatal(s.ListenAndServeTLS("", ""))
+	log.Println("Starting Reverse Proxy Server")
+	log.Fatal(s.ListenAndServeTLS("", ""))
 }
