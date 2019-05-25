@@ -19,14 +19,14 @@ func init() {
 	flag.StringVar(&domain, "domain", "", "Domain for which to request certs")
 	flag.StringVar(&to, "to", "", "Downstream server. ex: http://localhost:8080")
 	flag.Parse()
-}
 
-func main() {
 	if domain == "" || to == "" {
 		log.Fatal("Both -domain and -to are required")
 	}
 
-	log.Println("Attempting to fetch TLS certificates from Let's Encrypt")
+}
+
+func main() {
 	manager := &autocert.Manager{
 		Cache:      autocert.DirCache("certs"),
 		HostPolicy: autocert.HostWhitelist(domain),
