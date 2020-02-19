@@ -13,7 +13,7 @@ import (
 )
 
 var opts struct {
-	Domain  string `short:"d" long:"domain" description:"Domain for which to request certs from Let's Encrypt" required:"true"`
+	Domains string `short:"d" long:"domain" description:"Comma-separated domains for which to request certs from Let's Encrypt" required:"true"`
 	To      string `short:"t" long:"to" description:"http[s]://IP:port to which traffic will be redirected" required:"true"`
 	Verbose bool   `short:"v" long:"verbose" description:"Log request data"`
 	Trace   bool   `long:"trace" description:"Log request data"`
@@ -41,9 +41,14 @@ func main() {
 		log.Fatal(err)
 	}
 
+	domains := strings.Split(opts.Domains, ",")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	manager := &autocert.Manager{
 		Cache:      autocert.DirCache("certs"),
-		HostPolicy: autocert.HostWhitelist(opts.Domain),
+		HostPolicy: autocert.HostWhitelist(domains...),
 		Prompt:     autocert.AcceptTOS,
 	}
 
@@ -55,7 +60,7 @@ func main() {
 
 	log.WithFields(log.Fields{
 		"to":     opts.To,
-		"domain": opts.Domain,
+		"domain": opts.Domains,
 	}).Info("Forwarding")
 
 	log.Fatal(s.ListenAndServeTLS("", ""))
