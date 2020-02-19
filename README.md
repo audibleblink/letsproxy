@@ -1,6 +1,6 @@
 # LetsProxy
 
-Dead simple reverse proxy that automatically pulls TLS certificates from Let's Encrypt.
+Dead simple, no config, reverse proxy that automatically pulls TLS certificates from Let's Encrypt.
 
 ## Usage
 
