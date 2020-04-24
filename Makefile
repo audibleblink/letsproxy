@@ -1,4 +1,4 @@
-.PHONY: windows windows32 linux linux32 darwin 
+.PHONY: all clean windows windows32 linux linux32 darwin 
 
 FLAGS=-ldflags="-s -w -buildid=" -trimpath
 BUILD=go build
