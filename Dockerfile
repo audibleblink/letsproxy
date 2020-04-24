@@ -8,11 +8,14 @@ RUN apk update --no-cache && \
 
 ENV CGO_ENABLED=0
 COPY go.mod go.sum ./
-RUN go mod download
+
+# TODO: replace when `go mod` eventually also track `main` deps
+# https://github.com/golang/go/issues/32504
+RUN go mod download && go install github.com/audibleblink/gox 
+
 COPY . .
-RUN make linux
+RUN make OSARCH=linux/amd64
 
 FROM alpine:latest
 EXPOSE 443
 COPY --from=builder /app/bin/linux_amd64 /app/letsproxy
-

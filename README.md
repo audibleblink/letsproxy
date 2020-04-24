@@ -1,6 +1,6 @@
 # LetsProxy
 
-Dead simple, no config, reverse proxy that automatically pulls TLS certificates from Let's Encrypt.
+No frills, no config, reverse proxy that automatically pulls TLS certificates from Let's Encrypt.
 
 ## Usage
 
@@ -16,6 +16,18 @@ Dead simple, no config, reverse proxy that automatically pulls TLS certificates 
 
 **WebSocket proxying requires building with Go v1.12+**
 
-This utility uses Go1.11+ built-in dependency system `go mod`. No need to be in $GOPATH, just clone the repo
-and `go build`
+```
+# required for concurrent cross-compilation build process and Makefile usage
+go install github.com/audibleblink/gox
+
+# OSARCH ?= "linux/amd64 linux/386 linux/arm windows/amd64 windows/386 darwin/amd64 darwin/386"
+make
+```
+
+To selectively build a binary os/arch combination, simply override the `OSARCH` variable at
+make-time
+
+```
+make OSARCH=windows/amd64
+```
 

@@ -1,37 +1,13 @@
-.PHONY: all clean windows windows32 linux linux32 darwin 
+.PHONY: all clean
 
-FLAGS=-ldflags="-s -w -buildid=" -trimpath
-BUILD=go build
-OUT=bin
+DIR = bin
+OUT = ${DIR}/{{.OS}}_{{.Arch}}
+GOFLAGS=-trimpath -ldflags="-s -w -buildid="
+OSARCH ?= "linux/amd64 linux/386 linux/arm windows/amd64 windows/386 darwin/amd64 darwin/386"
 
-all: windows windows32 linux darwin
+all:
+	gox -osarch ${OSARCH} ${GOFLAGS} -output ${OUT}
 
 clean: 
-	rm -rf ${OUT}
-
-windows:
-	$(eval GOOS=windows)
-	$(eval GOARCH=amd64)
-	GOOS=${GOOS} GOARCH=${GOARCH} ${BUILD} ${FLAGS} -o ${OUT}/${GOOS}_${GOARCH}.exe
-
-windows32:
-	$(eval GOOS=windows)
-	$(eval GOARCH=386)
-	GOOS=${GOOS} GOARCH=${GOARCH} ${BUILD} ${FLAGS} -o ${OUT}/${GOOS}_${GOARCH}.exe
-
-linux:
-	$(eval GOOS=linux)
-	$(eval GOARCH=amd64)
-	GOOS=${GOOS} GOARCH=${GOARCH} ${BUILD} ${FLAGS} -o ${OUT}/${GOOS}_${GOARCH}
-
-linux32:
-	$(eval GOOS=linux)
-	$(eval GOARCH=386)
-	GOOS=${GOOS} GOARCH=${GOARCH} ${BUILD} ${FLAGS} -o ${OUT}/${GOOS}_${GOARCH}
-
-darwin:
-	$(eval GOOS=darwin)
-	$(eval GOARCH=amd64)
-	GOOS=${GOOS} GOARCH=${GOARCH} ${BUILD} ${FLAGS} -o ${OUT}/${GOOS}_${GOARCH}.macho
-
+	rm -rf ${DIR}
 
