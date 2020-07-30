@@ -1,12 +1,17 @@
-.PHONY: all clean
+APP = letsproxy
+DIR = release
 
-DIR = bin
-OUT = ${DIR}/{{.OS}}_{{.Arch}}
-GOFLAGS=-trimpath -ldflags="-s -w -buildid="
-OSARCH ?= "linux/amd64 linux/386 linux/arm windows/amd64 windows/386 darwin/amd64 darwin/386"
+FLAGS=-trimpath -ldflags="-s -w -buildid="
 
-all:
-	gox -osarch ${OSARCH} ${GOFLAGS} -output ${OUT}
+PLATFORMS ?= linux windows darwin
+os = $(word 1, $@)
+
+
+all: ${PLATFORMS}
+
+${PLATFORMS}:
+	GOOS=${os} \
+	     go build ${FLAGS} -o ${DIR}/${APP}.${os}
 
 clean: 
 	rm -rf ${DIR}
