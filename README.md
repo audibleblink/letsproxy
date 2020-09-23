@@ -16,18 +16,6 @@ No frills, no config, reverse proxy that automatically pulls TLS certificates fr
 
 **WebSocket proxying requires building with Go v1.12+**
 
+```sh
+make [linux|windows|darwin]
 ```
-# required for concurrent cross-compilation build process and Makefile usage
-go install github.com/audibleblink/gox
-
-# OSARCH ?= "linux/amd64 linux/386 linux/arm windows/amd64 windows/386 darwin/amd64 darwin/386"
-make
-```
-
-To selectively build a binary os/arch combination, simply override the `OSARCH` variable at
-make-time
-
-```
-make OSARCH=windows/amd64
-```
-
